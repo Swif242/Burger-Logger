@@ -17,8 +17,9 @@ router.get("/", function(req, res) {
   });
   
   router.post("/api/burgers", function(req, res) {
-    burger.create(["burger_name", "devoured"], [req.body.burger_name, req.body.devoured], function(result) {
-      // Send back the ID of the new quote
+      console.log(req.body)
+    burger.create(["burger_name", "devoured"], [req.body.burger, req.body.devoured], function(result) {
+      // Send back the ID of the new burger
       res.json({ id: result.insertId });
     });
   });
@@ -30,7 +31,7 @@ router.get("/", function(req, res) {
   
     burger.update(
       {
-        sleepy: req.body.sleepy
+        devoured: req.body.devoured
       },
       condition,
       function(result) {

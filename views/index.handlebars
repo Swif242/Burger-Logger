@@ -1,4 +1,4 @@
-<h1 id="header">This is all about burgers!!</h1>
+<h1 id="header" style="text-align: center;">Burger Logger</h1>
 
 
 
@@ -27,7 +27,7 @@
     <div class="col-12"
         style="background-color: darkslateblue; width:100%; height:150px; text-align: center; padding-top:15px;">
         <form >
-            <input type="text" id="burger" name="name">
+            <input type="text" id="burger" name="burger">
             <button id="add" type="submit">Add burger</button>
         </form>
     </div>
@@ -39,12 +39,14 @@
     $("#add").on("click", function (event) {
         // Make sure to preventDefault on a submit event.
         event.preventDefault();
-        console.log("worked!!")
+        console.log("button worked!!")
 
-        // [name=plan] will find an element with a "name" attribute equal to the string "plan"
+        // [name=burger] will find an element with a "name" attribute equal to the string "burger"
         let newBurger = {
-            name: $("#add [name=name]").val().trim()
+            burger: $("#burger").val(),
+            devoured: false
         };
+        console.log(newBurger);
 
         // Send the POST request.
         $.ajax("/api/burgers", {
