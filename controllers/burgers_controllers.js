@@ -1,50 +1,55 @@
 const express = require("express");
-
-var router = express.Router();
+const routes = express.Router();
 
 // Import the model (burger.js) to use its database functions.
 const burger = require("../models/burger.js");
 
 // Create all our routes and set up logic within those routes where required.
-router.get("/", function(req, res) {
-    burger.all(function(data) {
-      var hbsObject = {
-        burgers: data
-      };
-      console.log(hbsObject);
-      res.render("index", hbsObject);
+routes.get("/", function (req, res) {
+    burger.selectBurgers().then(result => {
+        //This will populate results based on burger status
+        let devoured = result.filter(b => b.devoured === 1);
+        let notDevoured = result.filter(b => b.devoured === 0);
+        res.render("index", {
+            notDevouredList: notDevoured,
+            devouredList: devoured
+        });
+    }).catch((err) => {
+        res.status(500).send({ error: err });
     });
-  });
-  
-  router.post("/api/burgers", function(req, res) {
-      console.log(req.body)
-    burger.create(["burger_name", "devoured"], [req.body.burger, req.body.devoured], function(result) {
-      // Send back the ID of the new burger
-      res.json({ id: result.insertId });
+});
+
+routes.get("/api/burger", (req, res) => {
+    burger.selectBurgers().then((err, result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.status(500).send({ error: err });
     });
-  });
-  
-  router.put("/api/burgers/:id", function(req, res) {
-    var condition = "id = " + req.params.id;
-  
-    console.log("condition", condition);
-  
-    burger.update(
-      {
-        devoured: req.body.devoured
-      },
-      condition,
-      function(result) {
-        if (result.changedRows === 0) {
-          // If no rows were changed, then the ID must not exist, so 404
-          return res.status(404).end();
-        }
-        res.status(200).end();
-  
-      }
-    );
-  });
-  
-  // Export routes for server.js to use.
-  module.exports = router;
-  
+});
+
+routes.post("/api/burger", (req, res) => {
+    if (!req.body.name) {
+        res.status(500).send({ error: "Burger name is Required" });
+    }
+
+    let newBurger = {
+        name: req.body.name,
+        devoured: false
+    };
+
+    burger.create(newBurger).then(id => {
+        res.json(id);
+    }).catch((err) => {
+        res.status(500).send({ error: err });
+    });
+});
+
+routes.put("/api/burger/:id", (req, res) => {
+    burger.updateDevoured(req.params.id).then(result => {
+        res.json(result);
+    }).catch((err) => {
+        res.status(500).send({ error: err });
+    });
+});
+
+module.exports = routes;
