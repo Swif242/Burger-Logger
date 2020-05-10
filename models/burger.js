@@ -9,8 +9,9 @@ burger.selectBurgers = function () {
   return new Promise((resolve, reject) => {
       orm.selectAll("BURGERS").then(results => {
           resolve(results);
-      }).catch(() => {
-          reject("Could not get burgers");
+      }).catch((error) => {
+        console.error(error);
+        reject(error)
       });
   });
 };
@@ -24,8 +25,9 @@ burger.create = function (burger) {
           // DB generated burgerID
           burger.id = results.insertId;
           resolve(burger.id);
-      }).catch(() => {
-          reject("Could not add burger");
+      }).catch((error) => {
+        console.error(error);
+        reject(error)
       });
   });
 };
@@ -34,8 +36,9 @@ burger.updateDevoured = function (burgerId) {
   return new Promise((resolve, reject) => {
       orm.updateOne("BURGERS", "DEVOURED", true, "ID", burgerId).then(results => {
           resolve(results);
-      }).catch(() => {
-          reject("Could not update burger");
+      }).catch((error) => {
+        console.error(error);
+        reject(error)
       });
   });
 };
